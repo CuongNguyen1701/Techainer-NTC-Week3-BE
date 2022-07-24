@@ -1,6 +1,13 @@
 const fs = require('fs');
 const { min, max, repeat } = require('lodash');
 
+//load data from source
+dataLoader = (src) => {
+    let data = fs.readFileSync(src) 
+        return JSON.parse(data);
+    }
+
+//PERSON CLASS
 class Person{
     name; age; gender; dob;
     constructor(name,age,gender,dob){
@@ -10,16 +17,20 @@ class Person{
         this.dob = dob;
     }
 }
+
+//STUDENT CLASS
 class Student extends Person{
-    id; classID; grade;
-    constructor(name,age,gender,dob,id,classID,grade) {
+    id; classID; grades;
+    constructor(name,age,gender,dob,id,classID,grades) {
         super(name,age,gender,dob);
         this.id = id;
-        this.classID =classID;
-        this.grade = grade;
+        this.classID = classID;
+        this.grades = grades;
     }
 }
-class Grade{
+
+//GRADES CLASS
+class Grades{
     maths; physics; chem; english;
     constructor(maths,physics,chem,english){
         this.maths = maths;
@@ -27,7 +38,11 @@ class Grade{
         this.chem = chem;
         this.english = english;
     }
+
+    //calculate GPA
     avg(){ return (this.maths + this.physics + this.chem + this.english)/4; }
+    
+    //letter grade based on GPA
     alpha(){
         if(this.avg() < 0 || this.avg() > 10) return 'err';
         if(this.avg() < 4) return 'F';
@@ -37,42 +52,55 @@ class Grade{
         if(this.avg() < 8.5) return 'B';
         return 'A';
     }
+
+    //check if the student has passed
     passed(){
-        if(this.alpha() == 'err') return console.log('Grade out of range!');;
+        if(this.alpha() == 'err') return console.log('grades out of range!');;
         return (this.alpha() != 'F')  ? true : false;
     }
 }
 
-dataLoader = (src,dest) => {
-    let data = fs.readFileSync(src) 
-        data = JSON.parse(data);
-        for(let i = 0; i < data.length; i++){
-            let grade = new Grade(data[i].grade.maths,data[i].grade.physics, data[i].grade.chem,data[i].grade.english);
-            dest[i] = new Student(data[i].name, data[i].age, data[i].gender, data[i].dob, data[i].id, data[i].classID, grade);
+//Save the json string data to destination array
+initStudentsData = (data, dest) => {
+        for(let i = 0 ; i< data.length; i++){
+            let grades = new Grades(data[i].grades.maths,data[i].grades.physics, data[i].grades.chem,data[i].grades.english);
+            dest[i] = new Student(data[i].name, data[i].age, data[i].gender, data[i].dob, data[i].id, data[i].classID, grades);
         }
-
 }
 
-let dataArray = [];
-let lowest = 10;
-let highest = 0;
-dataLoader('students_data.json',dataArray);
-
-// for (let i = 0; i < students_data.length; i++) {
-//     dataArray[i] = new Data(students_data[i]); 
-//     let avg = dataArray[i].avg();
-//     lowest = (avg < lowest) ? avg : lowest;
-//     highest = (avg > highest) ? avg : highest;
-// }
-
-for (let i = 0; i < dataArray.length; i++) {
-    console.log(`\nName: ${dataArray[i].name}`);
-    console.log(`ID: ${dataArray[i].id}`);
-    console.log(`GPA: ${dataArray[i].grade.avg()}`);
-    console.log(`Rating: ${dataArray[i].grade.alpha()}`);
-    console.log(`Status: ${dataArray[i].grade.passed() ? "Passed" : "Failed"}`);
-    if(dataArray[i].grade.avg() == lowest) console.log("Note: Lowest GPA");
-    if(dataArray[i].grade.avg() == highest) console.log("Note: Highest GPA");
-    console.log();    
-    console.log(repeat('-',30));
+//return a list of gpas
+gpasList = (students)=>{
+    let gpas = [];
+    for(let student of students){
+        gpas.push(student.grades.avg());
+    }
+    return gpas;
 }
+
+//MAIN FUNC
+prtStudentsData = (students) =>{
+    let highest = max(gpasList(students));
+    let lowest = min(gpasList(students));
+    for (let student of students) {
+        let grades = student.grades;
+        console.log(`\nName: ${student.name}`);
+        console.log(`ID: ${student.id}`);
+        console.log(`GPA: ${grades.avg()}`);
+        console.log(`Rating: ${grades.alpha()}`);
+        console.log(`Status: ${grades.passed() ? "Passed" : "Failed"}`);
+        if(grades.avg() == lowest) console.log("Note: Lowest GPA");
+        if(grades.avg() == highest) console.log("Note: Highest GPA");
+        console.log();    
+        console.log(repeat('-',30));
+    }
+}
+
+
+let students = [];
+
+//initiate student data from json file
+initStudentsData(dataLoader('students_data.json'),students);
+
+//output
+prtStudentsData(students);
+
