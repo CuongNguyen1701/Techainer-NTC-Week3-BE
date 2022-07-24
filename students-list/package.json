@@ -1,0 +1,20 @@
+{
+  "name": "techainer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node students_list.js"
+  },
+  "keywords": [
+    "techainer"
+  ],
+  "author": "Nguyen Truc Cuong",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "learnyounode": "^3.5.10",
+    "lodash": "^4.17.21"
+  }
+}
