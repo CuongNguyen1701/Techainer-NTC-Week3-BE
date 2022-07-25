@@ -85,6 +85,7 @@ gpasList = (students)=>{
 
 //print data
 prtStudentsData = (students) =>{
+    if(students.length == 0) return console.log(`Can't find any students`);
     console.log(repeat('*',50) + "STUDENT'S LIST"+ repeat('*',50));
     let highest = max(gpasList(students));
     let lowest = min(gpasList(students));
@@ -155,7 +156,7 @@ filterStudents = (list, option) =>{
             let maxGpa = readlineSync.question(`Maximum:`);
             list = list.filter(el => {return (el.grades.avg() <= maxGpa && el.grades.avg() >= minGpa )});
             break;
-        case 'classID': case 'gender': case'age':
+        case 'classID': case 'gender': case'age'://these strings are conveniently the same as the student object's properties
             let desiredValue = readlineSync.question(`Enter ${option}:`);
             list = list.filter(el => {return el[`${option}`] == desiredValue});
             break;
@@ -164,6 +165,9 @@ filterStudents = (list, option) =>{
     }
     return list;
 }
+//-----------------------END OF FUNCTIONS AND CLASSES-----------------------//
+
+
 //-----------------------MAIN PROGRAM-----------------------//
 let students = [];
 let optionsList = ['sort options','filter options'];
@@ -176,6 +180,7 @@ let subOption;
 //initiate student data from loaded json file
 initStudentsData(dataLoader('students_data.json'),students);
 
+//Do stuffs based on option
 switch (option) {
     case 'sort options':
         subOptionsList = ['name', 'gpa', 'age'];
@@ -191,10 +196,7 @@ switch (option) {
         break;
 }
 
-
-console.log(`You chose ${subOption}`);
-
-
 //output
 prtStudentsData(students);
+//-----------------------END OF MAIN PROGRAM-----------------------//
 
