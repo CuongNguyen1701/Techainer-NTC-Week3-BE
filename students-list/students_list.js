@@ -120,7 +120,24 @@ menuPrompt = (list, type) =>{
 //Sort students list
 sortStudents = (list, option) =>{
     
-}
+    let isAscOrder = parseInt(readlineSync.question(`Enter 1 for ascending sort, 0 for descending sort: `));
+    //All of these are ascending sort
+    switch (option) {
+        case 'name':
+            list.sort((student1,student2) => {return student1.name.localeCompare(student2.name)});
+            break;
+        case 'gpa':
+            list.sort((student1,student2) => {return student1.grades.avg() - student2.grades.avg()});
+            break;
+        case 'age':
+            list.sort((student1,student2) => {return student1.age - student2.age});
+            break;
+        default:
+            break;
+    }
+    if(!isAscOrder) list.reverse();//Just reverse for descending
+    return list;
+    }
 
 //Filter students list
 filterStudents = (list, option) =>{
